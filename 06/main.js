@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 console.log(
   require('fs')
-  .readFileSync(process.env.INPUT || process.argv[2] || 'input.txt', 'utf8')
+  .readFileSync(
+    process.argv[2] || require('path').join(__dirname, 'input.txt'),
+    'utf8'
+  )
   .trim()
   .split('\n\n')
   .map(s => {
