@@ -24,7 +24,7 @@ make -C "$build_dir"
 You can each day's code as follows.
 
 -   JS: `./$day/main.js [input-file]`
--   C++: `"$build_dir/main [input-file]`.
+-   C++: `"$build_dir/$day/main" [input-file]`.
 
 The input file is optional, and defaults to `$day/input.txt`. Where example
 inputs are given, those examples are often included too, as e.g.
