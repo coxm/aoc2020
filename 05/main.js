@@ -7,7 +7,6 @@ const seats = require('fs')
   .trim()
   .split(/\s/mg)
   .map(code => parseInt(code.replace(/[FL]/g, '0').replace(/[BR]/g, '1'), 2))
-  .map(code => {console.log(code); return code;})
   .sort((a, b) => a - b);
 module.exports = seats;
 
