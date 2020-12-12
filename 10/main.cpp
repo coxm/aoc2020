@@ -2,34 +2,10 @@
 #include <vector>
 #include <fstream>
 #include <algorithm>
-#include <numeric>
-#include <unordered_map>
 
 
 using joltage_type = unsigned;
 using count_type = unsigned long;
-
-
-struct Link {
-  // joltage_type sum;
-  joltage_type previous;
-  joltage_type diff1Count;
-  joltage_type diff3Count;
-};
-
-
-struct PairHash {
-  constexpr std::size_t
-  operator()(std::pair<joltage_type, joltage_type> val) const noexcept {
-    if constexpr(sizeof(std::size_t) >= 2 * sizeof(joltage_type)) {
-      return (std::size_t(val.first) << sizeof(joltage_type)) | val.second;
-    }
-
-    // Cantor pairing function.
-    return val.second +
-      ((val.first + val.second) * (val.first + val.second + 1)) / 2;
-  }
-};
 
 
 int main(int const argc, char const* const* const argv) {
@@ -48,51 +24,40 @@ int main(int const argc, char const* const* const argv) {
 
 
   { // Part one.
-    auto const chain = std::accumulate(
-      std::begin(adaptors) + 1,
-      std::end(adaptors),
-      Link{0, 0, 1}, // diff3Count starts at 1 because of the device.
-      [] (Link const& link, joltage_type const joltage) -> Link {
-        return Link{
-          // link.sum + joltage - link.previous,
-          joltage,
-          link.diff1Count + joltage_type(joltage - link.previous == 1),
-          link.diff3Count + joltage_type(joltage - link.previous == 3)
-        };
+    joltage_type previous = 0;
+    unsigned jump1Count = 0;
+    unsigned jump3Count = 1; // Start at 1 because of the "device".
+    for (auto joltage: adaptors) {
+      switch (joltage - previous) {
+        case 1: ++jump1Count; break;
+        case 3: ++jump3Count; break;
       }
-    );
-    std::cout << "Part one: " << chain.diff1Count * chain.diff3Count
-      << std::endl;
+      previous = joltage;
+    }
+    std::cout << "Part one: " << jump1Count * jump3Count << std::endl;
   }
 
 
   { // Part two.
-    std::unordered_map<
-      std::pair<joltage_type, joltage_type>,
-      count_type,
-      PairHash
-    > counts;
+    /// The number of jumps from an adaptor to the device.
+    std::vector<count_type> jumpsToDevice(adaptors.size(), 0);
 
     joltage_type const deviceJoltage = adaptors.back() + 3;
     for (int len = int(adaptors.size()), i = len - 1; i >= 0; --i) {
       auto const currentJoltage = adaptors[i];
       auto const currentReach = currentJoltage + 3;
-      auto arrangements = count_type(currentReach >= deviceJoltage);
+      auto numArrangements = count_type(currentReach >= deviceJoltage);
       for (int j = i + 1; j < len; ++j) {
         joltage_type const stepJoltage =  adaptors[j];
         if (stepJoltage > currentReach) {
           break;
         }
-        auto const key = std::make_pair(stepJoltage, deviceJoltage);
-        auto const emplaceResult = counts.try_emplace(key, 0);
-        arrangements += emplaceResult.first->second;
+        numArrangements += jumpsToDevice[j];
       }
-      counts.try_emplace(
-        std::make_pair(currentJoltage, deviceJoltage), arrangements);
+      jumpsToDevice[i] = numArrangements;
     }
 
-    std::cout << "Part two: " << counts[std::make_pair(0, deviceJoltage)]
-      << std::endl;
+    std::cout << "Part two: " << jumpsToDevice[0] << std::endl;
   }
 
   return 0;
