@@ -1,8 +1,8 @@
 # AoC 2020
-Solutions for Advent of Code, 2020.
+Mixed C++/JS for Advent of Code, 2020.
 
-Each day has a C++ solution; if I was busy that morning, or fancied golfing,
-there's a JS solution as well.
+Most days have C++ solutions; if I was busy that day, or fancied some code
+golf, there is a JS solution instead or as well.
 
 
 ## Building
