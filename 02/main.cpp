@@ -1,4 +1,3 @@
-#include <cassert>
 #include <memory>
 #include <algorithm>
 #include <iostream>
@@ -20,12 +19,12 @@ int main(int const argc, char const* const* const argv) {
     if (file.eof()) {
       break;
     }
-    assert(file.get() == '-');
+    file.get();
     file >> high;
-    assert(file.get() == ' ');
+    file.get();
     file >> chr;
-    assert(file.get() == ':');
-    assert(file.get() == ' ');
+    file.get();
+    file.get();
     file >> password;
 
     // Part one.
